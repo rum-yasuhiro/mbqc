@@ -73,7 +73,7 @@ def h(self, qubit, *, q=None):
             mbqc.draw()
     """
 
-    return self.append(HGate, [qubit], [])
+    return self.circuit.append(HGate, [qubit], [])
 
 
 MBQC.h = h
