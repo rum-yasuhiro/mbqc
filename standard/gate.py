@@ -3,10 +3,8 @@
 # code origin by Yasuhiro Ohkura
 #
 
-from qiskit.circuit.instruction import Instruction
 
-
-class MBQCGate(Instruction):
+class MBQCGate:
     def __init__(self, name, num_qubits, params):
         """Create a new gate.
         
@@ -15,4 +13,3 @@ class MBQCGate(Instruction):
             num_qubits (int): the number of qubits the gate acts on.
             params (list): a list of parameters.
         """
-        super().__init__(name, num_qubits, 0, params)
