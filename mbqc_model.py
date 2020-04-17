@@ -6,7 +6,9 @@
 from typing import List
 import logging
 import sys
+import warnings
 import itertools
+import numpy as np
 
 from qiskit.extensions.standard.h import HGate
 from qiskit.extensions.standard.cz import CzGate
@@ -93,49 +95,92 @@ class MBQC:
         else:
             pass
 
+    ## 特に入力がない場合の、リソース状態をどのように扱うがが決まってない 2020 / 04 / 17
 
-## 特に入力がない場合の、リソース状態をどのように扱うがが決まってない 2020 / 04 / 17
+    def _construct_circuit(self):
+        qc = QuantumCircuit()
 
+        # prepare cluster state
+        qc += self._resource
+        # qc += self._measurement
 
-def _construct_circuit(self):
-    qc = QuantumCircuit()
+        return qc
 
-    # prepare cluster state
-    qc += self._resource
-    # qc += self._measurement
+    def _prep_resource(self) -> QuantumCircuit:
+        """
+        topologyのcluster stateを実装するかは今後決める 2020 / 3 / 11
+        """
 
-    return qc
+        qc = QuantumCircuit(self._resource_qubits)
+        qc.h(self._resource_qubits)
+        for i, j in self.connection_list:
+            qc.cz(self._resource_qubits[i], self._resource_qubits[j])
+        return qc
 
+    # def _feed_forward_measurement(self, quantum_circuit: QuantumCircuit):
+    #     """
+    #     Args:
+    #         qubit_label: The qubit number which is measured
 
-def _prep_resource(self) -> QuantumCircuit:
-    """
-    topologyのcluster stateを実装するかは今後決める 2020 / 3 / 11
-    """
+    #         x_angle: x axis measurement angle (float)
+    #         z_angle: z axis measurement angle (float)
 
-    qc = QuantumCircuit(self._resource_qubits)
-    qc.h(self._resource_qubits)
-    for i, j in self.connection_list:
-        qc.cz(self._resource_qubits[i], self._resource_qubits[j])
-    return qc
+    #         x_axis: boolean for X byproduct operator
+    #         z_axis: boolean for Z byproduct operator
+    #     """
+    #     qc = QuantumCircuit()
+    #     meas_dict_list = circuit_to_mbqc(quantum_circuit)
 
+    #     for _meas_set in meas_dict_list:
+    #         _meas_qubit = _meas_set.get("qubit_label")
 
-# def _feed_forward_measurement(self, quantum_circuit: QuantumCircuit):
-#     """
-#     Args:
-#         qubit_label: The qubit number which is measured
+    #     return qc
 
-#         x_angle: x axis measurement angle (float)
-#         z_angle: z axis measurement angle (float)
+    def draw(
+        self,
+        output=None,
+        scale=0.7,
+        filename=None,
+        style=None,
+        interactive=False,
+        line_length=None,
+        plot_barriers=True,
+        reverse_bits=False,
+        justify=None,
+        vertical_compression="medium",
+        idle_wires=True,
+        with_layout=True,
+        fold=None,
+        ax=None,
+        initial_state=False,
+    ):
+        # pylint: disable=cyclic-import
+        from qiskit.visualization import circuit_drawer
 
-#         x_axis: boolean for X byproduct operator
-#         z_axis: boolean for Z byproduct operator
-#     """
-#     qc = QuantumCircuit()
-#     meas_dict_list = circuit_to_mbqc(quantum_circuit)
+        if isinstance(output, (int, float, np.number)):
+            warnings.warn(
+                "Setting 'scale' as the first argument is deprecated. "
+                "Use scale=%s instead." % output,
+                DeprecationWarning,
+            )
+            scale = output
+            output = None
 
-#     for _meas_set in meas_dict_list:
-#         _meas_qubit = _meas_set.get("qubit_label")
-
-#     return qc
-
-# def draw():
+        return circuit_drawer(
+            self.circuit,
+            scale=scale,
+            filename=filename,
+            style=style,
+            output=output,
+            interactive=interactive,
+            line_length=line_length,
+            plot_barriers=plot_barriers,
+            reverse_bits=reverse_bits,
+            justify=justify,
+            vertical_compression=vertical_compression,
+            idle_wires=idle_wires,
+            with_layout=with_layout,
+            fold=fold,
+            ax=ax,
+            # initial_state=initial_state,
+        )

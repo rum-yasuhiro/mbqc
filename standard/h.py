@@ -116,10 +116,10 @@ def h(self, measurement=False):
             from qiskit.providers.aer.mbqc.mbqc_model import MBQC
 
             mbqc = MBQC()
-            mbqc.h(0)
+            mbqc.h()
             mbqc.draw()
     """
-    self.circuit += MBQCHGate.construct_circuit(measurement)
+    self.circuit += MBQCHGate.construct_circuit(measurement=measurement)
     return self.circuit
 
 
