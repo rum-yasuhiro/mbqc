@@ -7,12 +7,16 @@
 """
 Controled-not gate.
 """
+import sys
+
+sys.path.append("../")
 from .gate import MBQCGate
-from ..mbqc_model import MBQC
+from mbqc_model import MBQC
 
 from qiskit.extensions.standard.h import HGate
 from qiskit.extensions.standard.t import TGate
 from qiskit.extensions.standard.cz import CzGate
+from qiskit.extensions.standard.cx import CnotGate
 from qiskit.circuit.measure import Measure
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
@@ -64,16 +68,16 @@ class MBQCHGate(MBQCGate):
     def _feed_forward_measurement(self):
         meas_circuit = QuantumCircuit(self._qr, self._cr)
         meas_circuit.measure(self._qr[0], self._cr[0])
-        self.cirucuit.cx(self._qr[0], self._qr[1])
+        meas_circuit.cx(self._qr[0], self._qr[1])
 
         meas_circuit.measure(self._qr[1], self._cr[1])
-        self.cirucuit.cx(self._qr[1], self._qr[2])
+        meas_circuit.cx(self._qr[1], self._qr[2])
 
         meas_circuit.measure(self._qr[2], self._cr[2])
-        self.cirucuit.cx(self._qr[2], self._qr[3])
+        meas_circuit.cx(self._qr[2], self._qr[3])
 
         meas_circuit.measure(self._qr[3], self._cr[3])
-        self.cirucuit.cx(self._qr[3], self._qr[4])
+        meas_circuit.cx(self._qr[3], self._qr[4])
 
         return meas_circuit
 
