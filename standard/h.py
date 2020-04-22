@@ -28,44 +28,12 @@ class MBQCHGate(MBQCSingleGate):
         self, input_state: QuantumRegister = None,
     ):
         """Create new H gate."""
-        super().__init__("h", 1, [])
-
-        self.input_state = input_state
-        if self.input_state is None:
-            self._input_qr = QuantumRegister(1)
-        else:
-            self._input_qr = input_state
-
-        self._qr = QuantumRegister(3)
-        self._output_qr = QuantumRegister(1)
-
-        self._cr = ClassicalRegister(4)
+        super().__init__(name="h", input_state=input_state)
 
         self._resource_state = self._init_resource()
         self._set_angle = self._set_meas_angle()
         self._meas = self._measurement()
         self._forward_propagation = self._byproduct_op_propagation()
-
-    def _init_resource(self):
-        """ 
-        Initialize the Resource state
-
-        Returns: 
-            QuantumCircuit: the QuantumCircuit object for the constructed circuit 
-        """
-        resource_state_circuit = QuantumCircuit(
-            self._input_qr, self._qr, self._output_qr
-        )
-        if self.input_state is None:
-            resource_state_circuit.h(self._input_qr)
-        resource_state_circuit.h(self._qr)
-        resource_state_circuit.h(self._output_qr)
-        resource_state_circuit.cz(self._input_qr[0], self._qr[0])
-        resource_state_circuit.cz(self._qr[0:2], self._qr[1:3])
-        resource_state_circuit.cz(self._qr[2], self._output_qr[0])
-        resource_state_circuit.barrier()
-
-        return resource_state_circuit
 
     def _set_meas_angle(self):
         set_angle_circuit = QuantumCircuit(self._input_qr, self._qr)
@@ -99,12 +67,15 @@ class MBQCHGate(MBQCSingleGate):
 
         return byproduct_op_propagation_circuit
 
-    def construct_circuit(self, input_qubit: QuantumRegister = None, measurement=False):
+    def construct_circuit(self, measurement=False):
         """
         Construct the quantum circuit
 
+        Args: 
+            measurement    : Boolean
+
         Returns: 
-            QuantumCircuit: the QuantumCircuit object for the constructed circuit
+            QuantumCircuit : the QuantumCircuit object for the constructed circuit
         """
         self._initial_resource_state = QuantumCircuit() + self._resource_state
         circuit = QuantumCircuit()
@@ -114,29 +85,8 @@ class MBQCHGate(MBQCSingleGate):
         circuit += self._forward_propagation
 
         if measurement:
-            measurement_cr = ClassicalRegister(1, "m")
+            measurement_cr = ClassicalRegister(1, "output")
             circuit.add_register(measurement_cr)
             circuit.measure(self._qr[-1], measurement_cr)
 
         return circuit
-
-
-# def h(self, measurement=False):
-
-#     """
-#     Example:
-
-#         Circuit Representation:
-
-#         .. jupyter execute::
-
-#             from qiskit.providers.aer.mbqc.mbqc_model import MBQC
-
-#             mbqc = MBQC()
-#             mbqc.h()
-#             mbqc.draw()
-#     """
-#     self.circuit += MBQCHGate().construct_circuit(measurement=measurement)
-
-
-# MBQC.h = h
