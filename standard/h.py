@@ -24,7 +24,9 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 class MBQCHGate(MBQCSingleGate):
     """Hadamard (bit-flip) gate."""
 
-    def __init__(self, input_state: QuantumRegister = None):
+    def __init__(
+        self, input_state: QuantumRegister = None,
+    ):
         """Create new H gate."""
         super().__init__("h", 1, [])
 
@@ -38,8 +40,6 @@ class MBQCHGate(MBQCSingleGate):
         self._output_qr = QuantumRegister(1)
 
         self._cr = ClassicalRegister(4)
-
-        self._initial_resource_state = initial_resource_state
 
         self._resource_state = self._init_resource()
         self._set_angle = self._set_meas_angle()
@@ -106,9 +106,7 @@ class MBQCHGate(MBQCSingleGate):
         Returns: 
             QuantumCircuit: the QuantumCircuit object for the constructed circuit
         """
-        if self._initial_resource_state is None:
-            self._initial_resource_state = QuantumCircuit() + self._resource_state
-
+        self._initial_resource_state = QuantumCircuit() + self._resource_state
         circuit = QuantumCircuit()
         circuit += self._initial_resource_state
         circuit += self._set_angle
