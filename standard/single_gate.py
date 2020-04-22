@@ -39,8 +39,7 @@ class MBQCSingleGate:
         resource_state_circuit = QuantumCircuit(
             self._input_qr, self._qr, self._output_qr
         )
-        if self.input_state is None:
-            resource_state_circuit.h(self._input_qr)
+
         resource_state_circuit.h(self._qr)
         resource_state_circuit.h(self._output_qr)
         resource_state_circuit.cz(self._input_qr[0], self._qr[0])
