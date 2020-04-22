@@ -18,7 +18,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 ## Gates
 sys.path.append("./")
 from standard.h import MBQCHGate
-
+from standard.s import MBQCSGate
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -204,5 +204,24 @@ class MBQC:
                 mbqc.draw()
         """
         self.circuit += MBQCHGate(input_state=input_qubit).construct_circuit(
+            measurement=measurement
+        )
+
+    def s(self, input_qubit: QuantumRegister = None, measurement=False):
+
+        """
+        Example:
+
+            Circuit Representation:
+
+            .. jupyter execute::
+
+                from qiskit.providers.aer.mbqc.mbqc_model import MBQC
+
+                mbqc = MBQC()
+                mbqc.s()
+                mbqc.draw()
+        """
+        self.circuit += MBQCSGate(input_state=input_qubit).construct_circuit(
             measurement=measurement
         )
