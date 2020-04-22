@@ -4,7 +4,7 @@
 #
 
 
-class MBQCGate:
+class MBQCSingleGate:
     def __init__(self, name, num_qubits, params):
         """Create a new gate.
         

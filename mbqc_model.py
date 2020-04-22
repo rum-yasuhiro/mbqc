@@ -15,13 +15,15 @@ from qiskit.extensions.standard.cz import CzGate
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
-# from circuit_to_mbqc import circuit_to_mbqc
+## Gates
+sys.path.append("./")
+from standard.h import MBQCHGate
 
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-logger.debug(sys.path)
+# logger.debug(sys.path)
 
 # 抽象基底クラス(ABC)を用いるかどうかは、今後の開発状況によって決める。 2020 / 3 / 11
 
@@ -183,4 +185,24 @@ class MBQC:
             fold=fold,
             ax=ax,
             # initial_state=initial_state,
+        )
+
+    # Gates
+    def h(self, input_qubit: QuantumRegister = None, measurement=False):
+
+        """
+        Example:
+
+            Circuit Representation:
+
+            .. jupyter execute::
+
+                from qiskit.providers.aer.mbqc.mbqc_model import MBQC
+
+                mbqc = MBQC()
+                mbqc.h()
+                mbqc.draw()
+        """
+        self.circuit += MBQCHGate(input_state=input_qubit).construct_circuit(
+            measurement=measurement
         )
