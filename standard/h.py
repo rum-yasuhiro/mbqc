@@ -43,8 +43,8 @@ class MBQCHGate(MBQCSingleGate):
 
         self._resource_state = self._init_resource()
         self._set_angle = self._set_meas_angle()
-        self._measurement = self._measurement()
-        self._byproduct_op_propagation = self._byproduct_op_propagation()
+        self._meas = self._measurement()
+        self._forward_propagation = self._byproduct_op_propagation()
 
     def _init_resource(self):
         """ 
@@ -110,8 +110,8 @@ class MBQCHGate(MBQCSingleGate):
         circuit = QuantumCircuit()
         circuit += self._initial_resource_state
         circuit += self._set_angle
-        circuit += self._measurement
-        circuit += self._byproduct_op_propagation
+        circuit += self._meas
+        circuit += self._forward_propagation
 
         if measurement:
             measurement_cr = ClassicalRegister(1, "m")
