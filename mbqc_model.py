@@ -19,6 +19,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 sys.path.append("./")
 from standard.h import MBQCHGate
 from standard.s import MBQCSGate
+from standard.u3 import MBQCU3Gate
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -189,39 +190,19 @@ class MBQC:
 
     # Gates
     def h(self, input_qubit: QuantumRegister = None, measurement=False):
-
-        """
-        Example:
-
-            Circuit Representation:
-
-            .. jupyter execute::
-
-                from qiskit.providers.aer.mbqc.mbqc_model import MBQC
-
-                mbqc = MBQC()
-                mbqc.h()
-                mbqc.draw()
-        """
         self.circuit += MBQCHGate(input_state=input_qubit).construct_circuit(
             measurement=measurement
         )
 
     def s(self, input_qubit: QuantumRegister = None, measurement=False):
-
-        """
-        Example:
-
-            Circuit Representation:
-
-            .. jupyter execute::
-
-                from qiskit.providers.aer.mbqc.mbqc_model import MBQC
-
-                mbqc = MBQC()
-                mbqc.s()
-                mbqc.draw()
-        """
         self.circuit += MBQCSGate(input_state=input_qubit).construct_circuit(
             measurement=measurement
         )
+
+    def u3(
+        self, theta, phi, lam, input_qubit: QuantumRegister = None, measurement=False
+    ):
+        self.circuit += MBQCU3Gate(
+            theta, phi, lam, input_state=input_qubit
+        ).construct_circuit(measurement=measurement)
+
