@@ -12,6 +12,7 @@ import numpy as np
 
 from .single_gate import MBQCSingleGate
 
+from qiskit.extensions.standard.z import ZGate
 from qiskit.extensions.standard.rx import RXGate
 from qiskit.extensions.standard.ry import RYGate
 from qiskit.extensions.standard.cz import CzGate
@@ -20,14 +21,14 @@ from qiskit.circuit.measure import Measure
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
-class MBQCHGate(MBQCSingleGate):
-    """Hadamard (bit-flip) gate."""
+class MBQCSGate(MBQCSingleGate):
+    """pi/2 phase gate."""
 
     def __init__(
         self, input_state: QuantumRegister = None,
     ):
-        """Create new H gate."""
-        super().__init__(name="h", input_state=input_state)
+        """Create new S gate."""
+        super().__init__(name="s", input_state=input_state)
 
         self._resource_state = self._init_resource()
         self._set_angle = self._set_meas_angle()
@@ -37,9 +38,9 @@ class MBQCHGate(MBQCSingleGate):
     def _set_meas_angle(self):
         set_angle_circuit = QuantumCircuit(self._input_qr, self._qr)
         set_angle_circuit.ry(np.pi / 2, self._input_qr[0])
-        set_angle_circuit.rx(np.pi / 2, self._qr[0])
+        set_angle_circuit.ry(np.pi / 2, self._qr[0])
         set_angle_circuit.rx(np.pi / 2, self._qr[1])
-        set_angle_circuit.rx(np.pi / 2, self._qr[2])
+        set_angle_circuit.ry(np.pi / 2, self._qr[2])
 
         return set_angle_circuit
 
@@ -58,11 +59,13 @@ class MBQCHGate(MBQCSingleGate):
         byproduct_op_propagation_circuit = QuantumCircuit(
             self._input_qr, self._qr, self._output_qr
         )
-        byproduct_op_propagation_circuit.cx(self._input_qr[0], self._output_qr[0])
+        byproduct_op_propagation_circuit.cx(self._qr[0], self._output_qr[0])
+        byproduct_op_propagation_circuit.cx(self._qr[2], self._output_qr[0])
+
+        byproduct_op_propagation_circuit.cz(self._input_qr[0], self._output_qr[0])
         byproduct_op_propagation_circuit.cz(self._qr[0], self._output_qr[0])
         byproduct_op_propagation_circuit.cz(self._qr[1], self._output_qr[0])
-        byproduct_op_propagation_circuit.cx(self._qr[1], self._output_qr[0])
-        byproduct_op_propagation_circuit.cx(self._qr[2], self._output_qr[0])
+        byproduct_op_propagation_circuit.z(self._output_qr[0])
 
         return byproduct_op_propagation_circuit
 
